@@ -1,2 +1,7 @@
 node_modules/
-keys.json
+.expo/
+dist/
+android/
+ios/
+*.jks
+service-account*.json

@@ -1,5 +1,31 @@
 {
+  "name": "usage-sync",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "private": true,
+  "scripts": {
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "prebuild": "expo prebuild --platform android",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"tests/*.test.ts\"",
+    "ios": "expo run:ios"
+  },
   "dependencies": {
-    "googleapis": "^190.0.0"
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "expo": "~54.0.0",
+    "expo-document-picker": "~14.0.0",
+    "expo-secure-store": "~15.0.0",
+    "expo-status-bar": "~3.0.0",
+    "jsrsasign": "^11.1.0",
+    "react": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-safe-area-context": "~5.6.0"
+  },
+  "devDependencies": {
+    "@types/jsrsasign": "^10.5.0",
+    "@types/react": "~19.1.0",
+    "babel-preset-expo": "^54.0.10",
+    "typescript": "~5.9.2"
   }
 }
