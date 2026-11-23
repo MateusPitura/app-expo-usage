@@ -12,6 +12,9 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0F172A"
       }
+    },
+    "ios": {
+      "bundleIdentifier": "com.usagesync.app"
     }
   }
 }
