@@ -1,7 +1,8 @@
 node_modules/
 .expo/
 dist/
-android/
-ios/
+/android/
+/ios/
 *.jks
 service-account*.json
+modules/usage-stats/android/build/
