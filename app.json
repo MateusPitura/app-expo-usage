@@ -15,6 +15,11 @@
     },
     "ios": {
       "bundleIdentifier": "com.usagesync.app"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2928446a-12ae-4234-b3bb-422a1ea3c597"
+      }
     }
   }
 }

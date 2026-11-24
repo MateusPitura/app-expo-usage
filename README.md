@@ -1,83 +1,68 @@
-# Usage Sync
+<h1 align="center">
+  <p>Usage Sync</p>
+</h1>
 
-Android app (React Native + Expo) that reads **per-app screen time**, shows it **hour by hour**, and pushes
-daily totals into a **Google Sheet** (via a service account) — e.g. Duolingo's minutes for 23 Nov land in the
-`Duolingo` row, under `Novembro`, in column `Y`, in gray font.
+<p>
+  <img src="https://img.shields.io/badge/Platform-Android-green">
+</p>
+
+## Description
+
+Usage Sync is an Android app that reads per-app screen time, displays usage hour by hour, and syncs daily totals to a Google Sheet. Choose which apps to track and map them to rows in your spreadsheet
+
+- [Features](#features)
+- [How to Run](#how-to-run)
+- [Google Sheets Setup](#google-sheets-setup)
+- [Spreadsheet Layout](#spreadsheet-layout)
+- [Technologies Used](#technologies-used)
+- [Authors](#authors)
 
 ## Features
 
-| | |
-|---|---|
-| **Filter by apps** | "Choose apps" picker with search; the selection is remembered and is also the sync list |
-| **Hourly view** | One card per selected app: 24 bars (00–23h), tap a bar for its minutes; day navigator (‹ ›) |
-| **Service-account credentials** | Settings → paste the JSON key or import the `.json` file. Private key is kept in Android Keystore-backed SecureStore |
-| **Spreadsheet config** | Settings → spreadsheet ID/URL, tab name (`{year}` supported), month names, days to sync, "Save & test" |
-| **Sync button** | Usage screen → *Sync to Sheets*. Writes minutes + gray font, reports what was written/skipped |
+📊 **Hourly usage:** view a 24-hour chart for each selected app and browse previous days
 
-## How the sheet is written
+📱 **App selection:** search installed apps and remember the apps to track and sync
 
-Matches the layout of `Habit_Tracker.xlsx`:
+🔄 **Google Sheets sync:** write daily usage totals and review which entries were synced or skipped
 
-* Column **B** has month headers (`Janeiro` … `Dezembro`) followed by that month's rows (`Duolingo`, `Corrida` …).
-* Columns **C…AG** are days 1…31 (day *N* → column C + N − 1).
-* Value = **total minutes** (integer) for that app and day, written with `spreadsheets.batchUpdate`
-  (`updateCells`) touching only the **value** and **font color** (`#808080`), so fills/borders stay intact.
-* The row is looked up by name (case/accent-insensitive) *inside the month's block*. Each app card has a
-  **Sheet row name** field if the sheet label differs from the app name. Several apps with the same row name
-  are summed (e.g. Instagram + X → `Redes sociais`).
-* Safety rules: cells containing a **formula** (the category rows `Inglês`, `Atividade física`, `Concursos`)
-  are never overwritten; apps with < 1 min of usage are **not written** (so a day Android no longer remembers
-  can't overwrite real data with 0); missing rows/tabs are reported as *skipped*, never created.
-* Re-syncing is idempotent: it overwrites the same cell with the latest total.
+## How to Run
 
-## Run it
+This project includes a native Kotlin Expo module for Android usage statistics, so it cannot run in Expo Go
 
-This app contains a native Kotlin module (`modules/usage-stats`), so it **does not run in Expo Go** — use a
-development/preview build.
+1. Install dependencies with `npm install`
 
-```bash
-npm install
-npx expo install --fix            # aligns package versions with your Expo SDK
-npx expo run:android              # builds + installs on a connected device/emulator (needs Android Studio SDK)
+2. Run `npm run android` (Android SDK are required)
 
-# or build an APK in the cloud:
-npx eas build -p android --profile preview
-```
+3. Build with `npm run build:android`
 
-First launch: tap **Open usage access settings** on the Usage screen and enable *Usage access* for "Usage Sync".
+### Google Sheets Setup
 
-Tests for the logic (sheet lookup, hourly bucketing, JWT/RS256, REST calls): `npm test`
-(needs Node ≥ 22.18; uses a fixture exported from your workbook).
+1. In Google Cloud Console, create a project and enable the `Google Sheets API`
 
-## Google setup (one time)
+2. Create a service account and download a JSON key
 
-1. Google Cloud Console → create/select a project → **enable the Google Sheets API**.
-2. IAM & Admin → Service Accounts → create one → *Keys* → **Add key → JSON** (downloads the file).
-3. Open your spreadsheet → **Share** → add the service account's `client_email` as **Editor**.
-4. In the app: Settings → import the JSON, paste the spreadsheet URL, **Save & test**.
+3. Share the target spreadsheet with the service account's `client_email` as an `Editor`
 
-## Things to know
+4. In app, open `Settings`, import the JSON key and enter the spreadsheet URL
 
-* **Retention:** Android keeps detailed usage events for roughly a week, so sync covers at most the last 7 days
-  (setting: *Days to sync*, default 2 = today + yesterday).
-* **Numbers vs. Digital Wellbeing:** usage is rebuilt from foreground-activity events; it is very close to Digital
-  Wellbeing but not guaranteed identical (e.g. media playing in the background isn't "screen time").
-* **Service-account key on a phone:** fine for a personal app; don't distribute a build that contains someone
-  else's key. Because the key can only reach sheets explicitly shared with it, the blast radius is small.
-* Only apps with a launcher icon are listed (system services are hidden).
+### Spreadsheet Layout
 
-## Layout
+- Month headers are in column `B`, with that month's app rows beneath each header
+- Day numbers 1–31 use columns `C–AG` (day 1 is column C)
 
-```
-App.tsx                       tab shell (Usage | Settings)
-src/screens/UsageScreen.tsx   date nav, app filter, hourly cards, sync button + result
-src/screens/SettingsScreen.tsx credentials + spreadsheet config
-src/components/               HourlyChart, AppPickerModal, small UI kit
-src/lib/usage.ts              sessions -> per-day/per-hour buckets
-src/lib/googleAuth.ts         service-account JWT -> OAuth token (no Node-only deps)
-src/lib/jwtSigner.ts          RS256 signing with pure-JS jsrsasign
-src/lib/sheets.ts             row/column lookup + sync planner (pure, tested)
-src/lib/sheetsApi.ts          Google Sheets v4 REST client
-modules/usage-stats/          Expo module (Kotlin): UsageStatsManager events -> sessions
-tests/                        node:test suite + fixture from Habit_Tracker.xlsx
-```
+## Technologies Used
+
+<p align="left">
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React Native">
+  <img src="https://img.shields.io/badge/Expo-1C1E24?style=for-the-badge&logo=expo&logoColor=white" alt="Expo">
+  <img src="https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white" alt="Google Cloud">
+  <img src="https://img.shields.io/badge/Google_Sheets-34A853?style=for-the-badge&logo=googlesheets&logoColor=white" alt="Google Sheets API">
+</p>
+
+## Authors
+
+| Mateus Pitura |
+| --- |
+| <p align="center"><img src="https://avatars.githubusercontent.com/u/119008106" width="100" height="100" alt="Mateus Pitura"></p> |
+| <a href="https://url.mateuspitura.com?q=linkedin.com/in/mateuspitura/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"></a> |
