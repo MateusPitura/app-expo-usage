@@ -7,7 +7,7 @@
     "start": "expo start --dev-client",
     "android": "expo run:android",
     "prebuild": "expo prebuild --platform android",
-    "build:android": "npx eas-cli build --platform android --profile production",
+    "build:android": "npx eas-cli build --platform android --profile preview",
     "typecheck": "tsc --noEmit",
     "test": "node --test \"tests/*.test.ts\"",
     "ios": "expo run:ios"
