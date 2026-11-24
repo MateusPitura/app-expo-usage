@@ -14,7 +14,7 @@ function Shell() {
   const t = useTheme();
   const insets = useSafeAreaInsets();
   const { ready } = useSettings();
-  const [tab, setTab] = useState<Tab>('apps');
+  const [tab, setTab] = useState<Tab>('sync');
 
   if (!ready) {
     return (
@@ -43,8 +43,8 @@ function Shell() {
         <SettingsScreen />
       </View>
       <View style={[styles.tabBar, { backgroundColor: t.card, borderColor: t.border, paddingBottom: insets.bottom }]}>
-        <TabButton id="apps" label="Apps" />
         <TabButton id="sync" label="Sync" />
+        <TabButton id="apps" label="Apps" />
         <TabButton id="settings" label="Settings" />
       </View>
     </View>
